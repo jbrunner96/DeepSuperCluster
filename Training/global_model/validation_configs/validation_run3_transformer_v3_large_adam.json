@@ -1,0 +1,110 @@
+{   "dataset_conf":
+   {  "validation": {
+       "input_folders": [
+           "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023/awkward_126X_mcRun3_2023_forPU65_v4/validation",
+           "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023/awkward_126X_mcRun3_2023_forPU65_v4/validation"
+       ],
+       "file_input_columns": [
+           "cl_features",
+           "cl_labels",
+           "window_features",
+           "window_metadata",
+           "cl_h"
+       ],
+       "columns": {
+           "cl_features": [
+               "en_cluster",
+               "et_cluster",
+               "cluster_eta",
+               "cluster_phi",
+               "en_cluster_log",
+               "et_cluster_log",
+               "cluster_ieta",
+               "cluster_iphi",
+               "cluster_iz",
+               "cluster_deta",
+               "cluster_dphi",
+               "cluster_den_seed",
+               "cluster_det_seed",
+               "cluster_den_seed_log",
+               "cluster_det_seed_log",
+               "cl_etaWidth",
+               "cl_phiWidth",
+               "cl_swissCross",
+               "cl_nxtals"
+           ],
+           "cl_labels": [
+               "in_scluster",
+               "is_seed",
+               "in_geom_mustache"
+           ],
+           "window_metadata": [
+               "flavour",
+               "nVtx",
+               "rho",
+               "obsPU",
+               "truePU",
+               "ncls",
+               "en_mustache_calib",
+               "et_true_gen",
+               "en_true_gen",
+               "nclusters_insc",
+               "en_true_sim_good",
+               "et_true_sim_good",
+               "en_true_gen",
+               "en_true_sim"
+           ],
+           "window_features": [
+               "max_en_cluster",
+               "max_et_cluster",
+               "max_deta_cluster",
+               "max_dphi_cluster",
+               "max_den_cluster",
+               "max_det_cluster"
+           ]
+       },
+       "additional_columns": {
+           "cl_features": ["en_cluster_calib", "et_cluster_calib"],
+           "seed_features" : ["seed_eta","seed_phi", "seed_ieta","seed_iphi", "seed_iz", 
+                              "en_seed", "et_seed","en_seed_calib","et_seed_calib",
+                              "seed_f5_r9","seed_f5_sigmaIetaIeta", "seed_f5_sigmaIetaIphi",
+                              "seed_f5_sigmaIphiIphi","seed_f5_swissCross",
+                              "seed_r9","seed_sigmaIetaIeta", "seed_sigmaIetaIphi",
+                              "seed_sigmaIphiIphi","seed_swissCross",
+                              "seed_nxtals","seed_etaWidth","seed_phiWidth"
+                             ]
+       },
+       "norm_factors_file": "/eos/user/d/dvalsecc/www/ECAL/Clustering/DeepCluster/models_archive/gcn_models/metadata/run3_126X_2023/normalization_factors/normalization_factors_run3_126X_2023.json",
+       "reweighting_file": "/eos/user/d/dvalsecc/www/ECAL/Clustering/DeepCluster/models_archive/gcn_models/metadata/run3_126X_2023/reweightings/total_reweighting_run3_126X_2023.json",
+       "norm_type": "stdscale",
+       "padding": true,
+       "ncls_padding": -1,
+       "nhits_padding": -1,
+       "include_rechits": true, 
+       "chunk_size": 5120,
+       "batch_size": 1024,
+       "maxevents": 400000,
+       "nworkers": 3,
+       "max_batches_in_memory": 100,
+       "output_tensors": [
+           [
+               "cl_X_norm",
+               "wind_X_norm",
+               "cl_hits",
+               "is_seed",
+               "cls_mask",
+               "hits_mask"
+           ],
+           [
+               "in_scluster",
+               "flavour",
+               "cl_X",
+               "wind_X",
+               "wind_meta"
+           ],
+           [
+               "weight"
+           ]
+       ]
+   }}}
+

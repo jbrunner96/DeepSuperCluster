@@ -17,9 +17,11 @@
 
     "cl_metadata": [ "calo_score", "calo_simen_sig", "calo_simen_PU",
                      "cluster_PUfrac","calo_nxtals_PU",
-                     "noise_en","noise_en_uncal","noise_en_nofrac","noise_en_uncal_nofrac" ],
+                     "noise_en","noise_en_uncal","noise_en_nofrac","noise_en_uncal_nofrac",
+		     "other_calo_index"],
 
-    "cl_labels" : ["is_seed","is_calo_matched","is_calo_seed", "in_scluster","in_geom_mustache"],
+    "cl_labels" : ["is_seed","is_calo_matched", "is_calo_matched_diffcalo",
+		   "is_calo_seed", "in_scluster","in_geom_mustache"],
 
     
     "seed_features" : ["seed_eta","seed_phi", "seed_ieta","seed_iphi", "seed_iz", 
@@ -46,6 +48,7 @@
                         "en_true_sim_good", "et_true_sim_good",
                         "en_mustache_raw", "et_mustache_raw","en_mustache_calib", "et_mustache_calib",
                         "max_en_cluster_insc","max_deta_cluster_insc","max_dphi_cluster_insc",
+			"calo_index",
                         "event_tot_simen_PU","wtot_simen_PU","wtot_simen_sig",
                        "is_seed_calo_matched", "is_seed_calo_seed", "is_seed_mustache_matched"],
     

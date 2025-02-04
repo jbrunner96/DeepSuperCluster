@@ -1,0 +1,176 @@
+{
+    "models_path": "/eos/user/j/jabrunne/www/ECAL/Clustering/DeepCluster/models_archive/Run3_126X_2023/caloseed_classifier/",
+
+    "dataset_conf" : {
+        "training": {
+            "input_folders": ["/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023_overlapTraining_single/awkward_126X_mcRun3_2023_forPU65_v4/training",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023_overlapTraining_single/awkward_126X_mcRun3_2023_forPU65_v4/training",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023_overlapTraining_double/awkward_126X_mcRun3_2023_forPU65_v4/training",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023_overlapTraining_double/awkward_126X_mcRun3_2023_forPU65_v4/training"],
+            "file_input_columns":  ["cl_features", "cl_labels", "window_features", "window_metadata", "cl_h"],
+            "columns": {
+                "cl_features": [
+                    "en_cluster", "et_cluster","cluster_eta", "cluster_phi",
+		    "en_cluster_log", "et_cluster_log", 
+                    "cluster_ieta", "cluster_iphi", "cluster_iz",
+		    "cluster_deta", "cluster_dphi", "cluster_den_seed", "cluster_det_seed",
+		    "cluster_den_seed_log", "cluster_det_seed_log",
+		    "cl_etaWidth",  "cl_phiWidth", "cl_swissCross", "cl_nxtals"
+                ],
+                "cl_labels" : ["in_scluster", "is_seed"],
+                "window_metadata": ["flavour", "nVtx", "rho", "obsPU",
+                                    "truePU", "ncls", "nclusters_insc", "en_true_gen", "en_true_sim", "is_seed_calo_seed"],
+                "window_features" : [ "max_en_cluster","max_et_cluster","max_deta_cluster",
+                                      "max_dphi_cluster","max_den_cluster","max_det_cluster"]
+            },
+            "norm_factors_file": "/eos/user/d/dvalsecc/www/ECAL/Clustering/DeepCluster/models_archive/gcn_models/metadata/run3_126X_2023/normalization_factors/normalization_factors_run3_126X_2023.json",
+            "reweighting_file": "/eos/user/d/dvalsecc/www/ECAL/Clustering/DeepCluster/models_archive/gcn_models/metadata/run3_126X_2023/reweightings/total_reweighting_run3_126X_2023.json",
+            "norm_type" : "stdscale",
+            "padding" : true,  
+            "ncls_padding" : -1, 
+            "nhits_padding": -1,
+            "chunk_size": 4096,
+            "batch_size": 1024,
+            "maxevents": 2000000,
+            "nworkers": 2,
+            "max_batches_in_memory":12,
+            "output_tensors": [["cl_X_norm", "wind_X_norm", "cl_hits", "is_seed", "cls_mask", "hits_mask"],
+                               ["in_scluster", "flavour", "cl_X", "wind_X", "wind_meta", "is_seed_calo_seed"], ["weight"]]
+           },
+        "validation": {
+            "input_folders": ["/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023_overlapTraining_single/awkward_126X_mcRun3_2023_forPU65_v4/validation",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023_overlapTraining_single/awkward_126X_mcRun3_2023_forPU65_v4/validation",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023_overlapTraining_double/awkward_126X_mcRun3_2023_forPU65_v4/validation",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023_overlapTraining_double/awkward_126X_mcRun3_2023_forPU65_v4/validation"],
+            "file_input_columns":  ["cl_features", "cl_labels", "window_features", "window_metadata", "cl_h"],
+            "columns": {
+                "cl_features": [
+                    "en_cluster", "et_cluster","cluster_eta", "cluster_phi",
+		    "en_cluster_log", "et_cluster_log", 
+                    "cluster_ieta", "cluster_iphi", "cluster_iz",
+		    "cluster_deta", "cluster_dphi", "cluster_den_seed", "cluster_det_seed",
+		    "cluster_den_seed_log", "cluster_det_seed_log",
+		    "cl_etaWidth",  "cl_phiWidth", "cl_swissCross", "cl_nxtals"
+                ],
+                "cl_labels" : ["in_scluster", "is_seed"],
+                "window_metadata": ["flavour", "nVtx", "rho", "obsPU",
+                                    "truePU", "ncls", "nclusters_insc", "en_true_gen", "en_true_sim", "is_seed_calo_seed"],
+                "window_features" : [ "max_en_cluster","max_et_cluster","max_deta_cluster",
+                                      "max_dphi_cluster","max_den_cluster","max_det_cluster"]
+            },
+            "norm_factors_file": "/eos/user/d/dvalsecc/www/ECAL/Clustering/DeepCluster/models_archive/gcn_models/metadata/run3_126X_2023/normalization_factors/normalization_factors_run3_126X_2023.json",
+            "reweighting_file": "/eos/user/d/dvalsecc/www/ECAL/Clustering/DeepCluster/models_archive/gcn_models/metadata/run3_126X_2023/reweightings/total_reweighting_run3_126X_2023.json",
+            "norm_type" : "stdscale",
+            "padding" : true, 
+            "ncls_padding" : -1, 
+            "nhits_padding": -1,
+            "chunk_size": 4096,
+            "batch_size": 1024,
+            "maxevents": 400000,
+            "nworkers": 1,
+            "max_batches_in_memory":8,
+            "output_tensors": [["cl_X_norm", "wind_X_norm", "cl_hits", "is_seed", "cls_mask", "hits_mask"],
+                               ["in_scluster", "flavour", "cl_X", "wind_X", "wind_meta", "is_seed_calo_seed"], ["weight"]]
+        },
+        "test": {
+            "input_folders": ["/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023_overlapTraining_single/awkward_126X_mcRun3_2023_forPU65_v4/test",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023_overlapTraining_single/awkward_126X_mcRun3_2023_forPU65_v4/test",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023_overlapTraining_double/awkward_126X_mcRun3_2023_forPU65_v4/test",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023_overlapTraining_double/awkward_126X_mcRun3_2023_forPU65_v4/test"],
+            "file_input_columns":  ["cl_features", "cl_labels", "window_features", "window_metadata", "cl_h"],
+            "columns": {
+                "cl_features": [
+                    "en_cluster", "et_cluster","cluster_eta", "cluster_phi",
+		    "en_cluster_log", "et_cluster_log", 
+                    "cluster_ieta", "cluster_iphi", "cluster_iz",
+		    "cluster_deta", "cluster_dphi", "cluster_den_seed", "cluster_det_seed",
+		    "cluster_den_seed_log", "cluster_det_seed_log",
+		    "cl_etaWidth",  "cl_phiWidth", "cl_swissCross", "cl_nxtals"
+                ],
+                "cl_labels" : ["in_scluster", "is_seed"],
+                "window_metadata": ["flavour", "nVtx", "rho", "obsPU",
+                                    "truePU", "ncls", "nclusters_insc", "en_true_gen", "en_true_sim", "is_seed_calo_seed"],
+                "window_features" : [ "max_en_cluster","max_et_cluster","max_deta_cluster",
+                                      "max_dphi_cluster","max_den_cluster","max_det_cluster"]
+            },
+            "norm_factors_file": "/eos/user/d/dvalsecc/www/ECAL/Clustering/DeepCluster/models_archive/gcn_models/metadata/run3_126X_2023/normalization_factors/normalization_factors_run3_126X_2023.json",
+            "reweighting_file": "/eos/user/d/dvalsecc/www/ECAL/Clustering/DeepCluster/models_archive/gcn_models/metadata/run3_126X_2023/reweightings/total_reweighting_run3_126X_2023.json",
+            "norm_type" : "stdscale",
+            "padding" : true, 
+            "ncls_padding" : -1, 
+            "nhits_padding": -1,
+            "chunk_size": 4096,
+            "batch_size": 1024,
+            "maxevents": 400000,
+            "nworkers": 1,
+            "max_batches_in_memory":10,
+            "output_tensors": [["cl_X_norm", "wind_X_norm", "cl_hits", "is_seed", "cls_mask", "hits_mask"],
+                               ["in_scluster", "flavour", "cl_X", "wind_X", "wind_meta", "is_seed_calo_seed"], ["weight"]]
+           }
+    },
+    
+    "nepochs": 300,
+    "lr": 0.001,
+    "opt": "adamW",
+    "activation": "selu",
+    "lr_reduce": {
+        "factor": 0.8,
+        "patience": 4,
+        "min_delta": 0.002
+    },
+    "early_stop": {
+        "patience": 30,
+        "min_delta": 0.001
+    },
+    "loss_plot": true, 
+    "output_dim_rechits": 16,
+    "output_dim_nodes": 64,
+    "features_builder_layers_input": [
+        128,
+        128
+    ],
+    "layers_clclass": [
+       128,
+        64
+    ],
+    "layers_windclass": [
+        64,
+        64
+    ],
+    "layers_enregr": [
+        64
+    ],
+    "layers_is_calo_seed": [
+        64
+    ],
+    "rechit_num_transf_layers": 2,
+    "rechit_num_transf_heads": 4,
+    "rechit_transf_ff_dim": 64,
+
+    "global_tranf_layers": 4,
+    "global_tranf_heads": 8,
+    "global_tranf_ff_dim": 512,
+
+    "accumulator_windclass": [64],
+    "accumulator_enregr": [64],
+    "accumulator_is_calo_seed": [64],
+    
+    "n_windclasses": 3,
+    "dropout": 0.01,
+    "l2_reg": false,
+    "loss_weights": {
+        "clusters": 100,
+        "window": 0.8,
+        "softF1": 1,
+        "en_resol": 0,
+        "en_softF1": 100,
+        "en_regr": 0.00,
+        "is_calo_seed":1,
+        "softF1_beta": 1.50
+    },
+    "comet": {
+        "project_name": "deepsc",
+        "workspace_name": "valsdav" 
+        }
+    
+}

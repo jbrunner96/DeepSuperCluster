@@ -14,11 +14,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--config", type=str, help="Config", required=True)
 parser.add_argument("--model", type=str, help="Model .py", required=True)
 parser.add_argument("--name", type=str, help="Model version name", required=False)
-parser.add_argument("--apikey", type=str, help="comet API key", required=False)
 parser.add_argument("--output", type=str,help="Override output folder", required=False)
 parser.add_argument("--debug", action="store_true", help="Debug and run TF eagerly")
 parser.add_argument("--profile", action="store_true", help="Profile model training")
-parser.add_argument("--comet", action="store_true", help="Use comet for logging")
 parser.add_argument("-v","--verbose", action="store_true", help="Verbose")
 args = parser.parse_args()
 
@@ -106,11 +104,11 @@ ds_test = awk_data.load_dataset(awk_data.LoaderConfig(**config["dataset_conf"]["
 # Create training and validation
 # ds_train = train_ds.prefetch(tf.data.AUTOTUNE).repeat(config['nepochs'])
 # ds_test  = test_ds.prefetch(tf.data.AUTOTUNE).repeat(config['nepochs'])
-#ds_train = ds_train.repeat(config['nepochs'])
-#ds_test  = ds_test.repeat(config['nepochs'])
+#ds_train = train_ds.repeat(config['nepochs'])
+#ds_test  = test_ds.repeat(config['nepochs'])
 
-#ds_train = ds_train.map(lambda x,y,z: (x,y,z), num_parallel_calls=1)
-#ds_test = ds_test.map(lambda x,y,z: (x,y,z), num_parallel_calls=1)
+ds_train = ds_train.map(lambda x,y,z: (x,y,z), num_parallel_calls=1)
+ds_test = ds_test.map(lambda x,y,z: (x,y,z), num_parallel_calls=1)
 
 ############### 
 # Loading the model file
@@ -142,11 +140,11 @@ with strategy.scope():
                   weighted_metrics=[])
 
     for X, y ,w  in ds_train:
-        # Load the model 
+        # Load the model
         ypred = model(X, training=False)
         #l = custom_loss(y, ypred)
         break
-    
+
     model.summary()
     
     # Callback
@@ -162,32 +160,31 @@ with strategy.scope():
         )
         callbacks.append(lr_reduce)
 
-    cp_callback = tf.keras.callbacks.ModelCheckpoint(
-        #filepath=outdir + "/{epoch:02d}-{val_loss:.6f}.weights.h5",
-        filepath=outdir + "/weights.{epoch:02d}-{val_loss:.6f}.h5",
-        save_weights_only=True,
-        verbose=1
-    )
-    cp_callback.set_model(model)
-    callbacks.append(cp_callback)
+    # cp_callback = tf.keras.callbacks.ModelCheckpoint(
+    #     filepath=outdir + "/weights.{epoch:02d}-{val_loss:.6f}.hdf5",
+    #     save_weights_only=True,
+    #     verbose=1
+    # )
+    # cp_callback.set_model(model)
+    # callbacks.append(cp_callback)
 
 
-    if "early_stop" in config:
-        early = tf.keras.callbacks.EarlyStopping(
-            monitor='val_loss', min_delta=config["early_stop"]["min_delta"], patience=config["early_stop"]["patience"],
-             verbose=1, mode='auto', baseline=None, restore_best_weights=False
-        )
-        callbacks.append(early)
+    # if "early_stop" in config:
+    #     early = tf.keras.callbacks.EarlyStopping(
+    #         monitor='val_loss', min_delta=config["early_stop"]["min_delta"], patience=config["early_stop"]["patience"],
+    #          verbose=1, mode='auto', baseline=None, restore_best_weights=False
+    #     )
+    #     callbacks.append(early)
 
-    if config["loss_plot"]:
-        loss_plotter = plot_loss.LossPlotter(outdir, batch_mode=True)
-        callbacks.append(loss_plotter)
+    # if config["loss_plot"]:
+    #     loss_plotter = plot_loss.LossPlotter(outdir, batch_mode=True)
+    #     callbacks.append(loss_plotter)
 
-    if args.profile:
-        tb_callback = tf.keras.callbacks.TensorBoard(outdir+"/profiler_logs",
-                                                 profile_batch=(50, 10100),
-                                                 update_freq='batch')
-        callbacks.append(tb_callback)
+    # if args.profile:
+    #     tb_callback = tf.keras.callbacks.TensorBoard(outdir+"/profiler_logs",
+    #                                              profile_batch=(50, 10100),
+    #                                              update_freq='batch')
+    #     callbacks.append(tb_callback)
 
     class ClearMemoryCallback(tf.keras.callbacks.Callback):
         def on_epoch_end(self, epoch, logs=None):
@@ -196,18 +193,18 @@ with strategy.scope():
 
     callbacks.append(ClearMemoryCallback())
             
-    if "comet" in config and args.comet:
+    if "comet" in config:
         # do not import if not needed
         import comet_ml
         experiment = comet_ml.Experiment(
-                api_key=args.apikey,
+                api_key=config["comet"]["api_key"],
                 project_name=config["comet"]["project_name"],
                 workspace=config["comet"]["workspace_name"]
         )
         experiment.set_name(name)
-        experiment.log_parameters(config)
         comet_callback = experiment.get_callback("keras")
         callbacks.append(comet_callback)
+
 
 
     if args.verbose:
@@ -215,24 +212,51 @@ with strategy.scope():
     else:
         verbosity = 2
     # FINALLY TRAINING!
-    print(">>> Start training")
-    history = model.fit(ds_train,
-        validation_data=ds_test, 
-        epochs=config['nepochs'],
-        #steps_per_epoch= config['dataset_conf']["training"]["maxevents"]//config['dataset_conf']["training"]['batch_size'], 
-        #validation_steps= config['dataset_conf']["validation"]["maxevents"]//config['dataset_conf']["validation"]['batch_size'],
-        verbose=verbosity,
-        callbacks = callbacks
-    )
+    # print(">>> Start training")
+    # history = model.fit(ds_train,
+    #     validation_data=ds_test, 
+    #     epochs=config['nepochs'],
+    #     steps_per_epoch= config['dataset_conf']["training"]["maxevents"]//config['dataset_conf']["training"]['batch_size'], 
+    #     validation_steps= config['dataset_conf']["validation"]["maxevents"]//config['dataset_conf']["validation"]['batch_size'],
+    #     verbose=verbosity,
+    #     callbacks = callbacks
+    # )
 
-    with open(outdir+"/training_history.csv",'w') as of:
-        for key in history.history.keys():
-            of.write(key+ ";")
-        of.write('\n')
-        n = len(history.history['loss'])
-        for i in range(n):
-            for key in history.history.keys():
-                of.write(str(history.history[key][i])+';')
-            of.write('\n')
+    # with open(outdir+"/training_history.csv",'w') as of:
+    #     for key in history.history.keys():
+    #         of.write(key+ ";")
+    #     of.write('\n')
+    #     n = len(history.history['loss'])
+    #     for i in range(n):
+    #         for key in history.history.keys():
+    #             of.write(str(history.history[key][i])+';')
+    #         of.write('\n')
     
-    print(">>> Done!")
+    # print(">>> Done!")
+
+training_data_iter = iter(ds_train)
+validation_data_iter = iter(ds_test)
+
+    
+# Training loop
+for epoch in range(config['nepochs']):
+    print(f'Starting epoch {epoch}')
+
+    # reset the mtrics
+    metrics = model.metrics
+    for m in metrics:
+        m.reset_states()
+
+    # Iterate over the batches of the dataset.
+    for step in range(config['dataset_conf']["training"]["maxevents"]//config['dataset_conf']["training"]['batch_size']):
+        x_batch_train = next(training_data_iter)
+        out = model.train_step(x_batch_train)
+
+        # Print out the metrics for this epoch
+        print(f'step {step}: {out}')
+
+    for step in range(config['dataset_conf']["validation"]["maxevents"]//config['dataset_conf']["validation"]['batch_size']):
+        x_batch_val = next(validation_data_iter)
+        model.test_step(x_batch_val)
+
+        

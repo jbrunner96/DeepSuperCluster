@@ -12,9 +12,11 @@ parser.add_argument("-n","--number", type=int, help="number of files to merge", 
 args = parser.parse_args()
 
                     
-for ty in ["seed", "event","object"]:
-    data = []
+for ty in ["object"]:
     ifile = 0
+     # Open the HDF5 store
+    store = pd.HDFStore(args.outputfile.replace("{type}", ty))
+    
     for f in glob.glob(args.inputdir+"/{}_data*.tar.gz".format(ty)):
         if args.number > 0 and ifile >= args.number: break
         ifile += 1
@@ -35,10 +37,12 @@ for ty in ["seed", "event","object"]:
                 'ele_clsRemoved_phi': convert_to_list,
                 'ele_clsRemoved_energy': convert_to_list
             })
-            data.append(df)
-    if len(data)==0: continue
-    A = pd.concat(data)
-
-    store = pd.HDFStore(args.outputfile.replace("{type}", ty))
-    store['df'] = A  # save it
-    store.close()        
+            # some hacks to fix the data
+            df.rename(columns={"output_object.csv":"genpart_index"}, inplace=True)
+            df = df.iloc[:-1]
+            df["ele_passConversionVeto"] = (df.ele_passConversionVeto==True).astype(int)
+            # Append the DataFrame to the store
+            # Remove the last row
+            store.append('df', df, index=False)
+    # Close the store
+    store.close()

@@ -291,7 +291,7 @@ class WindowCreator():
                 # It is required to have seed_min_fraction% of the calo energy and to be "in the window" of the seed
                 if pfcluster_calo_map[icl] !=-1 and pfcluster_calo_score[icl] > self.seed_min_fraction:
                     # ID of the associated caloparticle
-                    caloid = pfcluster_calo_map[icl] 
+                    caloid = pfcluster_calo_map[icl] # --> caloparticle of the seed
                     if self.do_pu_sim:
                         # Do not check PU fraction on the seed
                         PU_simenfrac = cluster_PU_simenergy[icl] / cluster_signal_simenergy[icl][caloid]
@@ -461,6 +461,8 @@ class WindowCreator():
                         # We have to check the calo_matching using simfraction threshold
                         # Check if the cluster is associated to the SAME calo as the seed
                         is_calo_matched =  pfcluster_calo_map[icl] == window["calo_index"]  # we know at this point it is not -1
+                        # Check the case for a cluster matched to a caloparticle that is different from the caloparticle of the seed
+                        is_calo_matched_different_calo =  (is_calo_matched == False) and (pfcluster_calo_map[icl] != -1)
                         # If the cluster is associated to the SAME CALO of the seed 
                         # the simfraction threshold by seed eta/et is used
                         if is_calo_matched: 
@@ -484,6 +486,15 @@ class WindowCreator():
                                 if debug: print("Cluster {} do not pass PU simenergy cut {:.3f}".format(icl, PU_simenfrac))
                                 pass_simfrac_thres = False   
                                 is_calo_seed = False
+
+                        elif is_calo_matched_different_calo:
+                            if calo_pfcluster_map[pfcluster_calo_map[icl]][0][0] == icl:
+                                is_calo_seed = True
+                                othercalo = pfcluster_calo_map[icl]
+                            else:
+                                is_calo_seed = False
+                                othercalo = -1
+                    
                         else:
                             # if the cluster is not associated to a caloparticle
                             # or it is associated to a calo different from the seed
@@ -507,6 +518,8 @@ class WindowCreator():
                         "in_geom_mustache" : in_geom_mustache,
                         # True if the seed has a calo and the cluster is associated to the same calo
                         "is_calo_matched": is_calo_matched,
+                        "is_calo_matched_diffcalo": is_calo_matched_different_calo,
+                        "other_calo_index": othercalo if is_calo_matched_different_calo else -1,
                         # True if the cluster is the main cluster of the calo associated with the seed
                         "is_calo_seed": is_calo_seed,
                         # is_calo_matched & (sim fraction optimized threshold) || cl it is the seed of the window 
