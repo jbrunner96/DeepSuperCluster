@@ -25,6 +25,9 @@ parser.add_argument("--wp-file", type=str,  help="File with sim fraction thresho
 parser.add_argument("-n","--nevents", type=int,nargs="+", help="n events iterator", required=False)
 parser.add_argument("-d","--debug", action="store_true",  help="debug", default=False)
 parser.add_argument("--min-et-seed", type=float,  help="Min Et of the seeds", default=1.)
+parser.add_argument("--max-et-seed", type=float,  help="Max Et of the seeds", default=1e6)
+parser.add_argument("--max-et-isolated-cl", type=float,  help="Max Et of the isolated clusters", default=1e6)
+parser.add_argument("--nocalomatched-nmax", type=int,  help="Max number of calomatched clusters", default=10)
 parser.add_argument("--pu-limit", type=float,  help="SimEnergy PU limit", default=1e6)
 args = parser.parse_args()
 
@@ -48,7 +51,10 @@ windows_creator = WindowCreator(args.wp_file, SEED_MIN_FRACTION,
                                 cl_min_fraction=CL_MIN_FRACION,
                                 simenergy_pu_limit = SIMENERGY_PU_LIMIT,
                                 min_et_seed=args.min_et_seed,
-                                assoc_strategy=args.assoc_strategy)
+                                max_et_seed=args.max_et_seed,
+                                max_et_isolated_cl=args.max_et_isolated_cl,
+                                assoc_strategy=args.assoc_strategy,
+                                nocalomatchedNmax=args.nocalomatched_nmax)
 
 debug = args.debug
 

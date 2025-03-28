@@ -23,10 +23,13 @@ parser.add_argument("--wp-file", type=str,  help="File with sim fraction thresho
 parser.add_argument("-q", "--queue", type=str, help="Condor queue", default="longlunch", required=True)
 parser.add_argument("-e", "--eos", type=str, default="user", help="EOS instance user/cms", required=False)
 parser.add_argument("--min-et-seed", type=float,  help="Min Et of the seeds", default=1)
+parser.add_argument("--max-et-seed", type=float,  help="Max Et of the seeds", default=1e6)
+parser.add_argument("--max-et-isolated-cl", type=float,  help="Max Et of the isolated cluster", default=1e6)
 parser.add_argument("-ov","--overlap", action="store_true",  help="Overlapping window mode", default=False)
 parser.add_argument("--pu-limit", type=float,  help="SimEnergy PU limit", default=1e6)
 parser.add_argument('-c', "--compress", action="store_true",  help="Compress output")
 parser.add_argument("--redo", action="store_true", default=False, help="Redo all files")
+parser.add_argument("--nocalomatched-nmax", type=int,  help="Max number of calomatched clusters", default=10)
 parser.add_argument("-d","--debug", action="store_true",  help="debug", default=False)
 parser.add_argument("-cf","--condor-folder", type=str,  help="Condor folder", default="condor_ndjson")
 args = parser.parse_args()
@@ -69,7 +72,9 @@ PULIM=$7;
 echo -e "Running ndjson dumper.."
 
 python cluster_ndjson_byevent.py -i ${INPUTFILE} -o output.ndjson \
-            -a ${ASSOC} --wp-file ${WPFILE} --min-et-seed ${ET_SEED} --pu-limit ${PULIM} {debug};
+            -a ${ASSOC} --wp-file ${WPFILE} --min-et-seed ${ET_SEED} \
+            --max-et-seed {max_et_seed} --max-et-isolated-cl {max_et_isolated_cl}  {overlap} \
+            --nocalomatched-nmax {max-nocalomatched} --pu-limit ${PULIM} {debug};
 
 {compress}
 echo -e "Copying result to: $OUTPUTDIR";
@@ -94,6 +99,13 @@ if args.overlap:
     script = script.replace("{overlap}", "--overlap")
 else:
     script = script.replace("{overlap}", "")
+if args.nocalomatched_nmax:
+    script = script.replace("{max-nocalomatched}", str(args.nocalomatched_nmax))
+else:
+    script = script.replace("{max-nocalomatched}", "10000")
+    
+script = script.replace("{max_et_seed}", str(args.max_et_seed))
+script = script.replace("{max_et_isolated_cl}", str(args.max_et_isolated_cl))
     
 arguments= []
 if not os.path.exists(args.outputdir):
