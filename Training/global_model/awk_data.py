@@ -36,7 +36,8 @@ default_features_dict = {
                      "cluster_PUfrac","calo_nxtals_PU",
                      "noise_en","noise_en_uncal","noise_en_nofrac","noise_en_uncal_nofrac" ],
 
-    "cl_labels" : ["is_seed","is_calo_matched","is_calo_seed", "in_scluster","in_geom_mustache"],
+    "cl_labels" : ["is_seed","is_calo_matched","is_calo_seed", "in_scluster","in_geom_mustache", "is_calo_seed",
+               "is_calo_matched_diffcalo"],
 
     
     "seed_features" : ["seed_eta","seed_phi", "seed_ieta","seed_iphi", "seed_iz", 
