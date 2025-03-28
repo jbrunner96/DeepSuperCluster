@@ -459,7 +459,7 @@ class DeepClusterGN(tf.keras.Model):
                                      last_act=tf.keras.activations.linear, dropout=self.dropout, L2=self.l2_reg)
 
         self.accum_is_calo_seed = get_dense(name="accumulator_is_calo_seed",
-                                               spec=self.accumulator_windclass + [self.output_dim_features],
+                                               spec=self.accumulator_is_calo_seed + [self.output_dim_features],
                                                act=self.activation,
                                                last_act=tf.keras.activations.linear,
                                                dropout=self.dropout, L2=self.l2_reg)
