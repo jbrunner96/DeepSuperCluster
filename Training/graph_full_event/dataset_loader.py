@@ -22,8 +22,9 @@ import torch.nn.functional as F
 from dataset_utils import read_file, convert_to_tensor, create_data_object
 
 class ECALGraphDataset(IterableDataset):
-    def __init__(self, root, transform=None, pre_transform=None, pre_filter=None, graphs_in_file=512):
+    def __init__(self, root, mode="training", transform=None, pre_transform=None, pre_filter=None, graphs_in_file=512):
         self.root = root
+        self.mode = mode
         self.transform = transform
         self.pre_transform =  pre_transform
         self.pre_filter = pre_filter
@@ -42,7 +43,7 @@ class ECALGraphDataset(IterableDataset):
     @property
     def processed_files(self):
         """Retrieve the list of processed .pt files."""
-        processed_dir = os.path.join(self.root, "processed")
+        processed_dir = os.path.join(self.root, "processed", self.mode)
         return sorted(f for f in os.listdir(processed_dir) if f.endswith('.pt'))
 
     def _preprocess(self, args):
@@ -97,7 +98,7 @@ class ECALGraphDataset(IterableDataset):
 
     def _load_group(self, file_path):
         """Loads a group of graphs from a file and yields individual graphs."""
-        full_path = os.path.join(self.root, "processed", file_path)
+        full_path = os.path.join(self.root, "processed", self.mode, file_path)
         group_data, slices = torch.load(full_path)
         
         num_graphs = len(slices['x']) - 1
@@ -131,3 +132,53 @@ class ECALGraphDataset(IterableDataset):
         for ifile in range(iter_start, iter_end):
             yield from self._load_group(self.processed_files[ifile])
 
+
+class RoundRobinDataset(IterableDataset):
+    def __init__(self, datasets):
+        super().__init__()
+        self.datasets = datasets  # [single_ele, single_gamma, double_ele, double_gamma]
+        
+    def __iter__(self):
+        iterators = [iter(ds) for ds in self.datasets]  # get an iterator for each dataset
+        exhausted_datasets = [False] * len(self.datasets)  # need to track which datasets are exhausted
+        
+        while not any(exhausted_datasets):  # we continue until first dataset is exhausted
+            for i, it in enumerate(iterators):
+                if not exhausted_datasets[i]:
+                    try:
+                        yield next(it)  # yield from the current (non exhausted) dataset
+                        
+                    except StopIteration:
+                        exhausted_datasets[i] = True  # if dataset exhausted, mark it as exhausted
+
+
+
+class ECALGraphDataset_Validation(IterableDataset):
+    """Load graphs from a specific .pt file. Allows to efficiently compute predictions for model"""
+    def __init__(self, path_to_file, transform=None):
+        self.path_to_file = path_to_file
+        self.transform = transform
+ 
+    def _load_group(self):
+        """Loads a group of graphs from a file and yields individual graphs."""
+        group_data, slices = torch.load(self.path_to_file)
+        
+        num_graphs = len(slices['x']) - 1
+        for i in range(num_graphs):
+            data = Data()
+            for key in group_data.keys():
+                if key in slices:
+                    start, end = slices[key][i], slices[key][i+1]
+                    if key == 'edge_index':
+                        data[key] = group_data[key][:, start:end]
+                    else:
+                        data[key] = group_data[key][start:end]
+                else:
+                    data[key] = group_data[key]
+            if self.transform:
+                data = self.transform(data)
+            yield data
+
+
+    def __iter__(self):
+            yield from self._load_group()
