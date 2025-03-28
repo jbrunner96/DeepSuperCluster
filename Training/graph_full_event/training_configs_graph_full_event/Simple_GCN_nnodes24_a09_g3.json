@@ -1,0 +1,67 @@
+{
+    "models_path": "/eos/user/j/jabrunne/www/ECAL/Clustering/DeepCluster/models_archive/Run3_126X_2023/graph_full_event_caloseed_classifier/simple_GCN",
+
+    "dataset_conf" : {
+        "training": {
+            "input_folders": ["/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023/ndjson_126X_mcRun3_2023_forPU65_byevent_v1",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023_overlapTraining_double/ndjson_126X_mcRun3_2023_forPU65_byevent_v1",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023/ndjson_126X_mcRun3_2023_forPU65_byevent_v1",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023_overlapTraining_double/ndjson_126X_mcRun3_2023_forPU65_byevent_v1"],
+            
+            "norm_type" : "stdscale",
+            "batch_size": 64,
+            "maxevents": 2000000,
+            "nworkers": 1
+           },
+        "validation": {
+            "input_folders": ["/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023_overlapTraining_single/awkward_126X_mcRun3_2023_forPU65_v4/validation",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023_overlapTraining_single/awkward_126X_mcRun3_2023_forPU65_v4/validation",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023_overlapTraining_double/awkward_126X_mcRun3_2023_forPU65_v4/validation",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023_overlapTraining_double/awkward_126X_mcRun3_2023_forPU65_v4/validation"],
+
+            "norm_type" : "stdscale",
+            "batch_size": 64,
+            "maxevents": 400000,
+            "nworkers": 1
+
+        },
+        "test": {
+            "input_folders": ["/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023_overlapTraining_single/awkward_126X_mcRun3_2023_forPU65_v4/test",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023_overlapTraining_single/awkward_126X_mcRun3_2023_forPU65_v4/test",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/electrons/run3_126X_2023_overlapTraining_double/awkward_126X_mcRun3_2023_forPU65_v4/test",
+            "/eos/user/r/rdfexp/ecal/cluster/output_deepcluster_dumper/windows_data/gammas/run3_126X_2023_overlapTraining_double/awkward_126X_mcRun3_2023_forPU65_v4/test"],
+            
+            "norm_type" : "stdscale",
+            "batch_size": 64,
+            "maxevents": 400000,
+            "nworkers": 1
+           }
+    },
+    
+    "nepochs": 100,
+    "lr": 0.001,
+    "opt": "adamW",
+    "activation": "relu",
+    "lr_reduce": {
+        "factor": 0.8,
+        "patience": 4,
+        "min_delta": 0.002
+    },
+    "early_stop": {
+        "patience": 30,
+        "min_delta": 0.001
+    },
+
+
+    "nnodes": 24,
+    "FocalLoss":{
+        "gamma": 3.0,
+        "alpha": 0.9
+    },
+
+    "comet": {
+        "project_name": "deepsc",
+        "workspace_name": "valsdav" 
+        }
+    
+}
