@@ -48,7 +48,7 @@
                         "en_true_sim_good", "et_true_sim_good",
                         "en_mustache_raw", "et_mustache_raw","en_mustache_calib", "et_mustache_calib",
                         "max_en_cluster_insc","max_deta_cluster_insc","max_dphi_cluster_insc",
-			"calo_index", "window_index",
+			"calo_index", "window_index", "event_id", "lumi_id", "run_id",
                         "event_tot_simen_PU","wtot_simen_PU","wtot_simen_sig",
                        "is_seed_calo_matched", "is_seed_calo_seed", "is_seed_mustache_matched"],
     

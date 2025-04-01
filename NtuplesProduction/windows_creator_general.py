@@ -335,6 +335,9 @@ class WindowCreator():
                 windex = "".join([ random.choice(string.ascii_lowercase) for _ in range(9)])
                 # Let's create  new window:
                 new_window = {
+                    "run_id": event.runId,
+                    "lumi_id": event.lumiId,
+                    "event_id": event.eventId,
                     "window_index": windex,
                     "seed_index": icl,
                     "seed": (cl_eta, cl_phi, cl_iz),

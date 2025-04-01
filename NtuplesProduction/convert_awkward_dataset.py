@@ -27,7 +27,7 @@ def load_iter(files):
         with gzip.open(filename, "rt") as file:
             lines = []
             for line in file.readlines():
-                line = line[line.rfind('{"window_index"'):]
+                line = line[line.rfind('{"run_id"'):]
                 if "}" in line:
                     line = line.replace("NaN", "-999")
                     lines.append(line)
@@ -75,7 +75,6 @@ if __name__ == "__main__":
     ninputfiles = len(inputfiles)
         
     print("Start reading files")
-        
     ig = 0
     iG = 1
     arrays = []
